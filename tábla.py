@@ -181,12 +181,12 @@ class Tábla:
     # checkmate state checker
     def matt(self, color):
         output = False
-        for piece in [i.occupying_piece for i in self.squares]:
-            if piece != None:
-                if piece.notation == 'K' and piece.color == color:
-                    king = piece
-        if king.get_valid_moves(self) == []:
-            if self.is_in_check(color):
+        for p in [i.occupying_piece for i in self.squares]:
+            if p != None:
+                if p.notation == 'K' and p.color == color:
+                    kir = p
+        if kir.get_valid_moves(self) == []:
+            if self.sak(color):
                 output = True
         return output
     def patt(self, display):
