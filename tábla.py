@@ -1,4 +1,13 @@
 import pygame
+
+from data.classes.pieces.Rook import Rook
+from data.classes.pieces.Bishop import Bishop
+from data.classes.pieces.Knight import Knight
+from data.classes.pieces.Queen import Queen
+from data.classes.pieces.King import King
+from data.classes.pieces.Pawn import Pawn
+
+# Tile creator
 class Square:
     def __init__(self, x, y, width, height):
         self.x = x
@@ -21,22 +30,30 @@ class Square:
             self.width,
             self.height
         )
- def get_coord(self):
+
+    # get the formal notation of the tile
+    def get_coord(self):
         columns = 'abcdefgh'
         return columns[self.x] + str(self.y + 1)
 
- def draw(self, display):
-
+    def draw(self, display):
+        # configures if tile should be light or dark or highlighted tile
         if self.highlight:
             pygame.draw.rect(display, self.highlight_color, self.rect)
         else:
             pygame.draw.rect(display, self.draw_color, self.rect)
-
+        # adds the chess piece icons
         if self.occupying_piece != None:
             centering_rect = self.occupying_piece.img.get_rect()
             centering_rect.center = self.rect.center
             display.blit(self.occupying_piece.img, centering_rect.topleft)
 
+# /* Board.py
+
+
+
+
+# Game state checker
 class Board:
     def __init__(self, width, height):
         self.width = width
@@ -58,46 +75,57 @@ class Board:
         self.squares = self.generate_squares()
         self.setup_board()
 
-def generate_squares(self):
-    output = []
-    for y in range(8):
-        for x in range(8):
-            output.append(Square(x,  y, self.tile_width, self.tile_height))
-            return output
+    def generate_squares(self):
+        output = []
+        for y in range(8):
+            for x in range(8):
+                output.append(
+                    Square(x,  y, self.tile_width, self.tile_height)
+                )
+        return output
 
-def get_square_from_pos(self, pos):
+    def get_square_from_pos(self, pos):
         for square in self.squares:
             if (square.x, square.y) == (pos[0], pos[1]):
                 return square
 
-def get_piece_from_pos(self, pos):
+    def get_piece_from_pos(self, pos):
         return self.get_square_from_pos(pos).occupying_piece
 
-def setup_board(self):
-    for y, row in enumerate(self.config):
-        for x, piece in enumerate(row):
-            if piece != '':
-                square = self.get_square_from_pos((x, y))
+    def setup_board(self):
+        for y, row in enumerate(self.config):
+            for x, piece in enumerate(row):
+                if piece != '':
+                    square = self.get_square_from_pos((x, y))
+                    # looking inside contents, what piece does it have
+                    if piece[1] == 'R':
+                        square.occupying_piece = Rook(
+                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                        )
+                    # as you notice above, we put `self` as argument, or means our class Board
+                    elif piece[1] == 'N':
+                        square.occupying_piece = Knight(
+                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                        )
+                    elif piece[1] == 'B':
+                        square.occupying_piece = Bishop(
+                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                        )
+                    elif piece[1] == 'Q':
+                        square.occupying_piece = Queen(
+                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                        )
+                    elif piece[1] == 'K':
+                        square.occupying_piece = King(
+                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                        )
+                    elif piece[1] == 'P':
+                        square.occupying_piece = Pawn(
+                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                        )
 
-                if piece[1] == 'R':
-                    square.occupying_piece = Rook((x, y), 'white' if piece[0] == 'w' else 'black', self)
 
-                elif piece[1] == 'N':
-                    square.occupying_piece = Knight((x, y), 'white' if piece[0] == 'w' else 'black', self)
-
-                elif piece[1] == 'B':
-                    square.occupying_piece = Bishop((x, y), 'white' if piece[0] == 'w' else 'black', self)
-
-                elif piece[1] == 'Q':
-                    square.occupying_piece = Queen((x, y), 'white' if piece[0] == 'w' else 'black', self)
-
-                elif piece[1] == 'K':
-                    square.occupying_piece = King((x, y), 'white' if piece[0] == 'w' else 'black', self)
-
-                elif piece[1] == 'P':
-                    square.occupying_piece = Pawn((x, y), 'white' if piece[0] == 'w' else 'black', self)
-
- def handle_click(self, mx, my):
+    def egér(self, mx, my):
         x = mx // self.tile_width
         y = my // self.tile_height
         clicked_square = self.get_square_from_pos((x, y))
@@ -111,7 +139,8 @@ def setup_board(self):
             if clicked_square.occupying_piece.color == self.turn:
                 self.selected_piece = clicked_square.occupying_piece
 
-  def is_in_check(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
+
+    def sak(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
         output = False
         king_pos = None
         changing_piece = None
@@ -149,14 +178,8 @@ def setup_board(self):
             new_square.occupying_piece = new_square_old_piece
         return output
 
-    for piece in pieces:
-        if piece.color != color:
-            for square in piece.attacking_squares(self):
-                if square.pos == king_pos:
-                    output = True
-
-
-    def is_in_checkmate(self, color):
+    # checkmate state checker
+    def matt(self, color):
         output = False
         for piece in [i.occupying_piece for i in self.squares]:
             if piece != None:
@@ -166,12 +189,11 @@ def setup_board(self):
             if self.is_in_check(color):
                 output = True
         return output
-
-
-    def draw(self, display):
+    def patt(self, display):
         if self.selected_piece is not None:
             self.get_square_from_pos(self.selected_piece.pos).highlight = True
             for square in self.selected_piece.get_valid_moves(self):
                 square.highlight = True
         for square in self.squares:
             square.draw(display)
+
