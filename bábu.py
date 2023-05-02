@@ -24,7 +24,7 @@ class Bábu:
     def get_valid_moves(self, tábla):
         output = []
         for square in self.get_moves(tábla):
-            if not tábla.is_in_check(self.color, board_change=[self.pos, square.pos]):
+            if not tábla.sak(self.color, board_change=[self.pos, square.pos]):
                 output.append(square)
         return output
     def move(self, tábla, square, force=False):
