@@ -23,40 +23,39 @@ class Bábu:
         return output
     def get_valid_moves(self, tábla):
         output = []
-        for square in self.get_moves(board):
-            if not board.is_in_check(self.color, board_change=[self.pos, square.pos]):
+        for square in self.get_moves(tábla):
+            if not tábla.is_in_check(self.color, board_change=[self.pos, square.pos]):
                 output.append(square)
         return output
-    def move(self, board, square, force=False):
-        for i in board.squares:
+    def move(self, tábla, square, force=False):
+        for i in tábla.squares:
             i.highlight = False
-        if square in self.get_valid_moves(board) or force:
-            prev_square = board.get_square_from_pos(self.pos)
+        if square in self.get_valid_moves(tábla) or force:
+            prev_square = tábla.get_square_from_pos(self.pos)
             self.pos, self.x, self.y = square.pos, square.x, square.y
             prev_square.occupying_piece = None
             square.occupying_piece = self
-            board.selected_piece = None
+            tábla.selected_piece = None
             self.has_moved = True
             # Pawn promotion
             if self.notation == ' ':
                 if self.y == 0 or self.y == 7:
-                    from data.classes.pieces.Queen import Queen
-                    square.occupying_piece = Queen(
+                    square.occupying_piece = Vezér(
                         (self.x, self.y),
                         self.color,
-                        board
+                        tábla
                     )
             # Move rook if king castles
             if self.notation == 'K':
                 if prev_square.x - self.x == 2:
-                    rook = board.get_piece_from_pos((0, self.y))
-                    rook.move(board, board.get_square_from_pos((3, self.y)), force=True)
+                    rook = tábla.get_piece_from_pos((0, self.y))
+                    rook.move(tábla, tábla.get_square_from_pos((3, self.y)), force=True)
                 elif prev_square.x - self.x == -2:
-                    rook = board.get_piece_from_pos((7, self.y))
-                    rook.move(board, board.get_square_from_pos((5, self.y)), force=True)
+                    rook = tábla.get_piece_from_pos((7, self.y))
+                    rook.move(tábla, tábla.get_square_from_pos((5, self.y)), force=True)
             return True
         else:
-            board.selected_piece = None
+            tábla.selected_piece = None
             return False
 
     def attacking_squares(self, board):
@@ -68,7 +67,7 @@ class Bábu:
 class Paraszt(Bábu):
     def __init__(self, pos, color, board):
         super().__init__(pos, color, board)
-        img_path = 'data/imgs/' + color[0] + '_pawn.png'
+        img_path = 'sakk/' + color[0] + '_pawn.png'
         self.img = pygame.image.load(img_path)
         self.img = pygame.transform.scale(self.img, (board.tile_width - 35, board.tile_height - 35))
         self.notation = ' '
@@ -89,27 +88,27 @@ class Paraszt(Bábu):
             new_pos = (self.x, self.y + move[1])
             if new_pos[1] < 8 and new_pos[1] >= 0:
                 output.append(
-                    board.get_square_from_pos(new_pos)
+                    tábla.get_square_from_pos(new_pos)
                 )
         return output
 
-    def get_moves(self, board):
+    def get_moves(self, tábla):
         output = []
-        for square in self.get_possible_moves(board):
+        for square in self.get_possible_moves(tábla):
             if square.occupying_piece != None:
                 break
             else:
                 output.append(square)
         if self.color == 'white':
             if self.x + 1 < 8 and self.y - 1 >= 0:
-                square = board.get_square_from_pos(
+                square = tábla.get_square_from_pos(
                     (self.x + 1, self.y - 1)
                 )
                 if square.occupying_piece != None:
                     if square.occupying_piece.color != self.color:
                         output.append(square)
             if self.x - 1 >= 0 and self.y - 1 >= 0:
-                square = board.get_square_from_pos(
+                square = tábla.get_square_from_pos(
                     (self.x - 1, self.y - 1)
                 )
                 if square.occupying_piece != None:
@@ -117,14 +116,14 @@ class Paraszt(Bábu):
                         output.append(square)
         elif self.color == 'black':
             if self.x + 1 < 8 and self.y + 1 < 8:
-                square = board.get_square_from_pos(
+                square = tábla.get_square_from_pos(
                     (self.x + 1, self.y + 1)
                 )
                 if square.occupying_piece != None:
                     if square.occupying_piece.color != self.color:
                         output.append(square)
             if self.x - 1 >= 0 and self.y + 1 < 8:
-                square = board.get_square_from_pos(
+                square = tábla.get_square_from_pos(
                     (self.x - 1, self.y + 1)
                 )
                 if square.occupying_piece != None:
@@ -132,8 +131,8 @@ class Paraszt(Bábu):
                         output.append(square)
         return output
 
-    def attacking_squares(self, board):
-        moves = self.get_moves(board)
+    def attacking_squares(self, tábla):
+        moves = self.get_moves(tábla)
         # return the diagonal moves
         return [i for i in moves if i.x != self.x]
 
@@ -143,14 +142,14 @@ class Paraszt(Bábu):
 
 
 class Ló(Bábu):
-    def __init__(self, pos, color, board):
-        super().__init__(pos, color, board)
-        img_path = 'data/imgs/' + color[0] + '_knight.png'
+    def __init__(self, pos, color, tábla):
+        super().__init__(pos, color, tábla)
+        img_path = 'sakk/' + color[0] + '_knight.png'
         self.img = pygame.image.load(img_path)
-        self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
+        self.img = pygame.transform.scale(self.img, (tábla.tile_width - 20, tábla.tile_height - 20))
         self.notation = 'N'
 
-    def get_possible_moves(self, board):
+    def get_possible_moves(self, tábla):
         output = []
         moves = [
             (1, -2),
@@ -171,7 +170,7 @@ class Ló(Bábu):
                 new_pos[1] >= 0
             ):
                 output.append([
-                    board.get_square_from_pos(
+                    tábla.get_square_from_pos(
                         new_pos
                     )
                 ])
@@ -183,20 +182,20 @@ class Ló(Bábu):
 
 
 class Futó(Bábu):
-    def __init__(self, pos, color, board):
-        super().__init__(pos, color, board)
-        img_path = 'data/imgs/' + color[0] + '_bishop.png'
+    def __init__(self, pos, color, tábla):
+        super().__init__(pos, color, tábla)
+        img_path = 'sakk/' + color[0] + '_bishop.png'
         self.img = pygame.image.load(img_path)
-        self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
+        self.img = pygame.transform.scale(self.img, (tábla.tile_width - 20, tábla.tile_height - 20))
         self.notation = 'B'
 
-    def get_possible_moves(self, board):
+    def get_possible_moves(self, tábla):
         output = []
         moves_ne = []
         for i in range(1, 8):
             if self.x + i > 7 or self.y - i < 0:
                 break
-            moves_ne.append(board.get_square_from_pos(
+            moves_ne.append(tábla.get_square_from_pos(
                 (self.x + i, self.y - i)
             ))
         output.append(moves_ne)
@@ -204,7 +203,7 @@ class Futó(Bábu):
         for i in range(1, 8):
             if self.x + i > 7 or self.y + i > 7:
                 break
-            moves_se.append(board.get_square_from_pos(
+            moves_se.append(tábla.get_square_from_pos(
                 (self.x + i, self.y + i)
             ))
         output.append(moves_se)
@@ -212,7 +211,7 @@ class Futó(Bábu):
         for i in range(1, 8):
             if self.x - i < 0 or self.y + i > 7:
                 break
-            moves_sw.append(board.get_square_from_pos(
+            moves_sw.append(tábla.get_square_from_pos(
                 (self.x - i, self.y + i)
             ))
         output.append(moves_sw)
@@ -220,7 +219,7 @@ class Futó(Bábu):
         for i in range(1, 8):
             if self.x - i < 0 or self.y - i < 0:
                 break
-            moves_nw.append(board.get_square_from_pos(
+            moves_nw.append(tábla.get_square_from_pos(
                 (self.x - i, self.y - i)
             ))
         output.append(moves_nw)
@@ -232,36 +231,36 @@ class Futó(Bábu):
 
 
 class Bástya(Bábu):
-    def __init__(self, pos, color, board):
-        super().__init__(pos, color, board)
-        img_path = 'data/imgs/' + color[0] + '_rook.png'
+    def __init__(self, pos, color, tábla):
+        super().__init__(pos, color, tábla)
+        img_path = 'sakk/' + color[0] + '_rook.png'
         self.img = pygame.image.load(img_path)
-        self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
+        self.img = pygame.transform.scale(self.img, (tábla.tile_width - 20, tábla.tile_height - 20))
         self.notation = 'R'
 
-    def get_possible_moves(self, board):
+    def get_possible_moves(self, tábla):
         output = []
         moves_north = []
         for y in range(self.y)[::-1]:
-            moves_north.append(board.get_square_from_pos(
+            moves_north.append(tábla.get_square_from_pos(
                 (self.x, y)
             ))
         output.append(moves_north)
         moves_east = []
         for x in range(self.x + 1, 8):
-            moves_east.append(board.get_square_from_pos(
+            moves_east.append(tábla.get_square_from_pos(
                 (x, self.y)
             ))
         output.append(moves_east)
         moves_south = []
         for y in range(self.y + 1, 8):
-            moves_south.append(board.get_square_from_pos(
+            moves_south.append(tábla.get_square_from_pos(
                 (self.x, y)
             ))
         output.append(moves_south)
         moves_west = []
         for x in range(self.x)[::-1]:
-            moves_west.append(board.get_square_from_pos(
+            moves_west.append(tábla.get_square_from_pos(
                 (x, self.y)
             ))
         output.append(moves_west)
@@ -271,18 +270,18 @@ class Bástya(Bábu):
 
 
 class Vezér(Bábu):
-    def __init__(self, pos, color, board):
-        super().__init__(pos, color, board)
-        img_path = 'data/imgs/' + color[0] + '_queen.png'
+    def __init__(self, pos, color, tábla):
+        super().__init__(pos, color, tábla)
+        img_path = 'sakk/' + color[0] + '_queen.png'
         self.img = pygame.image.load(img_path)
-        self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
+        self.img = pygame.transform.scale(self.img, (tábla.tile_width - 20, tábla.tile_height - 20))
         self.notation = 'Q'
 
-    def get_possible_moves(self, board):
+    def get_possible_moves(self, tábla):
         output = []
         moves_north = []
         for y in range(self.y)[::-1]:
-            moves_north.append(board.get_square_from_pos(
+            moves_north.append(tábla.get_square_from_pos(
                 (self.x, y)
             ))
         output.append(moves_north)
@@ -290,13 +289,13 @@ class Vezér(Bábu):
         for i in range(1, 8):
             if self.x + i > 7 or self.y - i < 0:
                 break
-            moves_ne.append(board.get_square_from_pos(
+            moves_ne.append(tábla.get_square_from_pos(
                 (self.x + i, self.y - i)
             ))
         output.append(moves_ne)
         moves_east = []
         for x in range(self.x + 1, 8):
-            moves_east.append(board.get_square_from_pos(
+            moves_east.append(tábla.get_square_from_pos(
                 (x, self.y)
             ))
         output.append(moves_east)
@@ -304,13 +303,13 @@ class Vezér(Bábu):
         for i in range(1, 8):
             if self.x + i > 7 or self.y + i > 7:
                 break
-            moves_se.append(board.get_square_from_pos(
+            moves_se.append(tábla.get_square_from_pos(
                 (self.x + i, self.y + i)
             ))
         output.append(moves_se)
         moves_south = []
         for y in range(self.y + 1, 8):
-            moves_south.append(board.get_square_from_pos(
+            moves_south.append(tábla.get_square_from_pos(
                 (self.x, y)
             ))
         output.append(moves_south)
@@ -318,13 +317,13 @@ class Vezér(Bábu):
         for i in range(1, 8):
             if self.x - i < 0 or self.y + i > 7:
                 break
-            moves_sw.append(board.get_square_from_pos(
+            moves_sw.append(tábla.get_square_from_pos(
                 (self.x - i, self.y + i)
             ))
         output.append(moves_sw)
         moves_west = []
         for x in range(self.x)[::-1]:
-            moves_west.append(board.get_square_from_pos(
+            moves_west.append(tábla.get_square_from_pos(
                 (x, self.y)
             ))
         output.append(moves_west)
@@ -332,7 +331,7 @@ class Vezér(Bábu):
         for i in range(1, 8):
             if self.x - i < 0 or self.y - i < 0:
                 break
-            moves_nw.append(board.get_square_from_pos(
+            moves_nw.append(tábla.get_square_from_pos(
                 (self.x - i, self.y - i)
             ))
         output.append(moves_nw)
@@ -342,14 +341,14 @@ class Vezér(Bábu):
 
 
 class Kir(Bábu ):
-    def __init__(self, pos, color, board):
-        super().__init__(pos, color, board)
-        img_path = 'data/imgs/' + color[0] + '_king.png'
+    def __init__(self, pos, color, tábla):
+        super().__init__(pos, color, tábla)
+        img_path = 'sakk/' + color[0] + '_king.png'
         self.img = pygame.image.load(img_path)
-        self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
+        self.img = pygame.transform.scale(self.img, (tábla.tile_width - 20, tábla.tile_height - 20))
         self.notation = 'K'
 
-    def get_possible_moves(self, board):
+    def get_possible_moves(self, tábla):
         output = []
         moves = [
             (0,-1), # north
@@ -361,8 +360,8 @@ class Kir(Bábu ):
             (-1, 0), # west
             (-1, -1), # nw
         ]
-        for move in moves:
-            new_pos = (self.x + move[0], self.y + move[1])
+        for i in moves:
+            new_pos = (self.x + i[0], self.y + i[1])
             if (
                 new_pos[0] < 8 and
                 new_pos[0] >= 0 and
@@ -370,56 +369,56 @@ class Kir(Bábu ):
                 new_pos[1] >= 0
             ):
                 output.append([
-                    board.get_square_from_pos(
+                    tábla.get_square_from_pos(
                         new_pos
                     )
                 ])
         return output
 
-    def can_castle(self, board):
+    def can_castle(self, tábla):
         if not self.has_moved:
             if self.color == 'white':
-                queenside_rook = board.get_piece_from_pos((0, 7))
-                kingside_rook = board.get_piece_from_pos((7, 7))
+                queenside_rook = tábla.get_piece_from_pos((0, 7))
+                kingside_rook = tábla.get_piece_from_pos((7, 7))
                 if queenside_rook != None:
                     if not queenside_rook.has_moved:
                         if [
-                            board.get_piece_from_pos((i, 7)) for i in range(1, 4)
+                            tábla.get_piece_from_pos((i, 7)) for i in range(1, 4)
                         ] == [None, None, None]:
                             return 'queenside'
                 if kingside_rook != None:
                     if not kingside_rook.has_moved:
                         if [
-                            board.get_piece_from_pos((i, 7)) for i in range(5, 7)
+                            tábla.get_piece_from_pos((i, 7)) for i in range(5, 7)
                         ] == [None, None]:
                             return 'kingside'
             elif self.color == 'black':
-                queenside_rook = board.get_piece_from_pos((0, 0))
-                kingside_rook = board.get_piece_from_pos((7, 0))
+                queenside_rook = tábla.get_piece_from_pos((0, 0))
+                kingside_rook = tábla.get_piece_from_pos((7, 0))
                 if queenside_rook != None:
                     if not queenside_rook.has_moved:
                         if [
-                            board.get_piece_from_pos((i, 0)) for i in range(1, 4)
+                            tábla.get_piece_from_pos((i, 0)) for i in range(1, 4)
                         ] == [None, None, None]:
                             return 'queenside'
                 if kingside_rook != None:
                     if not kingside_rook.has_moved:
                         if [
-                            board.get_piece_from_pos((i, 0)) for i in range(5, 7)
+                            tábla.get_piece_from_pos((i, 0)) for i in range(5, 7)
                         ] == [None, None]:
                             return 'kingside'
 
-    def get_valid_moves(self, board):
+    def get_valid_moves(self, tábla):
         output = []
-        for square in self.get_moves(board):
-            if not board.is_in_check(self.color, board_change=[self.pos, square.pos]):
+        for square in self.get_moves(tábla):
+            if not tábla.is_in_check(self.color, board_change=[self.pos, square.pos]):
                 output.append(square)
-        if self.can_castle(board) == 'queenside':
+        if self.can_castle(tábla) == 'queenside':
             output.append(
-                board.get_square_from_pos((self.x - 2, self.y))
+                tábla.get_square_from_pos((self.x - 2, self.y))
             )
-        if self.can_castle(board) == 'kingside':
+        if self.can_castle(tábla) == 'kingside':
             output.append(
-                board.get_square_from_pos((self.x + 2, self.y))
+                tábla.get_square_from_pos((self.x + 2, self.y))
             )
         return output

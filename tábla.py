@@ -1,11 +1,11 @@
 import pygame
 
-from data.classes.pieces.Rook import Rook
-from data.classes.pieces.Bishop import Bishop
-from data.classes.pieces.Knight import Knight
-from data.classes.pieces.Queen import Queen
-from data.classes.pieces.King import King
-from data.classes.pieces.Pawn import Pawn
+from bábu import Bástya
+from bábu import Futó
+from bábu import Ló
+from bábu import Vezér
+from bábu import Kir
+from bábu import Paraszt
 
 # Tile creator
 class Square:
@@ -54,7 +54,7 @@ class Square:
 
 
 # Game state checker
-class Board:
+class Tábla:
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -73,7 +73,7 @@ class Board:
             ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
         ]
         self.squares = self.generate_squares()
-        self.setup_board()
+        self.set_tábla()
 
     def generate_squares(self):
         output = []
@@ -92,35 +92,35 @@ class Board:
     def get_piece_from_pos(self, pos):
         return self.get_square_from_pos(pos).occupying_piece
 
-    def setup_board(self):
+    def set_tábla(self):
         for y, row in enumerate(self.config):
             for x, piece in enumerate(row):
                 if piece != '':
                     square = self.get_square_from_pos((x, y))
                     # looking inside contents, what piece does it have
                     if piece[1] == 'R':
-                        square.occupying_piece = Rook(
+                        square.occupying_piece = Bástya(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
                         )
                     # as you notice above, we put `self` as argument, or means our class Board
                     elif piece[1] == 'N':
-                        square.occupying_piece = Knight(
+                        square.occupying_piece = Ló(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
                         )
                     elif piece[1] == 'B':
-                        square.occupying_piece = Bishop(
+                        square.occupying_piece = Futó(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
                         )
                     elif piece[1] == 'Q':
-                        square.occupying_piece = Queen(
+                        square.occupying_piece = Vezér(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
                         )
                     elif piece[1] == 'K':
-                        square.occupying_piece = King(
+                        square.occupying_piece = Kir(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
                         )
                     elif piece[1] == 'P':
-                        square.occupying_piece = Pawn(
+                        square.occupying_piece = Paraszt(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
                         )
 
