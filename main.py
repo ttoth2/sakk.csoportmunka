@@ -11,7 +11,7 @@ T = Tábla(WINDOW_SIZE[0], WINDOW_SIZE[1])
 
 def draw(display):
 	display.fill('white')
-	T.draw(display)
+	T.r(display)
 	pygame.display.update()
 
 
@@ -24,10 +24,9 @@ if __name__ == '__main__':
 			if event.type == pygame.QUIT:
 				running = False
 			elif event.type == pygame.MOUSEBUTTONDOWN:
-       			# If the mouse is clicked
 				if event.button == 1:
-					T.handle_click(mx, my)
-		if T.matt('black'):                 
+					T.egér(mx, my)
+		if T.matt('black'):
 			print('White wins!')
 			running = False
 		elif T.matt('white'):

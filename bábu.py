@@ -94,7 +94,7 @@ class Paraszt(Bábu):
 
     def get_moves(self, tábla):
         output = []
-        for square in self.get_possible_moves(tábla):
+        for square in self.lehetöség(tábla):
             if square.occupying_piece != None:
                 break
             else:
