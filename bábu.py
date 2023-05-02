@@ -1,16 +1,16 @@
 import pygame
 
 class Bábu:
-    def __init__(self, pos, color, board):
+    def __init__(self, pos, color, tábla):
         self.pos = pos
         self.x = pos[0]
         self.y = pos[1]
         self.color = color
         self.has_moved = False
 
-    def get_moves(self, board):
+    def get_moves(self, tábla):
         output = []
-        for direction in self.get_possible_moves(board):
+        for direction in self.get_possible_moves(tábla):
             for square in direction:
                 if square.occupying_piece is not None:
                     if square.occupying_piece.color == self.color:
@@ -21,7 +21,7 @@ class Bábu:
                 else:
                     output.append(square)
         return output
-    def get_valid_moves(self, board):
+    def get_valid_moves(self, tábla):
         output = []
         for square in self.get_moves(board):
             if not board.is_in_check(self.color, board_change=[self.pos, square.pos]):
@@ -73,7 +73,7 @@ class Paraszt(Bábu):
         self.img = pygame.transform.scale(self.img, (board.tile_width - 35, board.tile_height - 35))
         self.notation = ' '
 
-    def get_possible_moves(self, board):
+    def lehetöség(self, tábla):
         output = []
         moves = []
         # move forward
