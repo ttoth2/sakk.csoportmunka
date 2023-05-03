@@ -350,38 +350,25 @@ class Kir(Bábu ):
 
     def get_possible_moves(self, tábla):
         output = []
-        moves = [
-            (0,-1), # north
-            (1, -1), # ne
-            (1, 0), # east
-            (1, 1), # se
-            (0, 1), # south
-            (-1, 1), # sw
-            (-1, 0), # west
-            (-1, -1), # nw
-        ]
+        moves = [(0,-1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), ]
         for i in moves:
             new_pos = (self.x + i[0], self.y + i[1])
             if (
                 new_pos[0] < 8 and new_pos[0] >= 0 and new_pos[1] < 8 and new_pos[1] >= 0
             ):
                 output.append([
-                    tábla.get_square_from_pos(
-                        new_pos
-                    )
+                    tábla.get_square_from_pos(new_pos)
                 ])
         return output
 
-    def can_castle(self, tábla):
+    def sánc(self, tábla):
         if not self.has_moved:
             if self.color == 'white':
                 queenside_rook = tábla.get_piece_from_pos((0, 7))
                 kingside_rook = tábla.get_piece_from_pos((7, 7))
                 if queenside_rook != None:
                     if not queenside_rook.has_moved:
-                        if [
-                            tábla.get_piece_from_pos((i, 7)) for i in range(1, 4)
-                        ] == [None, None, None]:
+                        if [tábla.get_piece_from_pos((i, 7)) for i in range(1, 4)] == [None, None, None]:
                             return 'queenside'
                 if kingside_rook != None:
                     if not kingside_rook.has_moved:
@@ -397,25 +384,23 @@ class Kir(Bábu ):
                         if [
                             tábla.get_piece_from_pos((i, 0)) for i in range(1, 4)
                         ] == [None, None, None]:
-                            return 'queenside'
+                            return 'vezérold'
                 if kingside_rook != None:
                     if not kingside_rook.has_moved:
                         if [
                             tábla.get_piece_from_pos((i, 0)) for i in range(5, 7)
                         ] == [None, None]:
-                            return 'kingside'
+                            return 'kirold'
 
     def lehet(self, tábla):
         output = []
         for square in self.get_moves(tábla):
             if not tábla.sak(self.color, board_change=[self.pos, square.pos]):
                 output.append(square)
-        if self.can_castle(tábla) == 'queenside':
+        if self.sánc(tábla) == 'kirold':
             output.append(
-                tábla.get_square_from_pos((self.x - 2, self.y))
-            )
-        if self.can_castle(tábla) == 'kingside':
+                tábla.get_square_from_pos((self.x + 2, self.y)))
+        if self.sánc(tábla) == 'vezérold':
             output.append(
-                tábla.get_square_from_pos((self.x + 2, self.y))
-            )
+                tábla.get_square_from_pos((self.x - 2, self.y)))
         return output

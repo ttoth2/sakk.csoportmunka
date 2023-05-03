@@ -20,7 +20,6 @@ if __name__ == '__main__':
 	while running:
 		mx, my = pygame.mouse.get_pos()
 		for event in pygame.event.get():
-
 			if event.type == pygame.QUIT:
 				running = False
 			elif event.type == pygame.MOUSEBUTTONDOWN:

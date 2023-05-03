@@ -25,12 +25,7 @@ class Square:
         self.occupying_piece = None
         self.coord = self.get_coord()
         self.highlight = False
-        self.rect = pygame.Rect(
-            self.abs_x,
-            self.abs_y,
-            self.width,
-            self.height
-        )
+        self.rect = pygame.Rect(self.abs_x,self.abs_y,self.width,self.height)
     def get_coord(self):
         columns = 'abcdefgh'
         return columns[self.x] + str(self.y + 1)
@@ -54,14 +49,14 @@ class Tábla:
         self.selected_piece = None
         self.turn = 'white'
         self.config = [
-            ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+            ['bB', 'bL', 'bF', 'bV', 'bK', 'bF', 'bL', 'bB'],
             ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
             ['','','','','','','',''],
             ['','','','','','','',''],
             ['','','','','','','',''],
             ['','','','','','','',''],
             ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-            ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
+            ['wB', 'wL', 'wF', 'wV', 'wK', 'wF', 'wL', 'wB'],
         ]
         self.squares = self.generate_squares()
         self.set_tábla()
@@ -85,34 +80,34 @@ class Tábla:
 
     def set_tábla(self):
         for y, row in enumerate(self.config):
-            for x, piece in enumerate(row):
-                if piece != '':
+            for x, p in enumerate(row):
+                if p != '':
                     square = self.get_square_from_pos((x, y))
 
-                    if piece[1] == 'R':
+                    if p[1] == 'B':
                         square.occupying_piece = Bástya(
-                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                            (x, y), 'white' if p[0] == 'w' else 'black', self
                         )
 
-                    elif piece[1] == 'N':
+                    elif p[1] == 'L':
                         square.occupying_piece = Ló(
-                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                            (x, y), 'white' if p[0] == 'w' else 'black', self
                         )
-                    elif piece[1] == 'B':
+                    elif p[1] == 'F':
                         square.occupying_piece = Futó(
-                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                            (x, y), 'white' if p[0] == 'w' else 'black', self
                         )
-                    elif piece[1] == 'Q':
+                    elif p[1] == 'V':
                         square.occupying_piece = Vezér(
-                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                            (x, y), 'white' if p[0] == 'w' else 'black', self
                         )
-                    elif piece[1] == 'K':
+                    elif p[1] == 'K':
                         square.occupying_piece = Kir(
-                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                            (x, y), 'white' if p[0] == 'w' else 'black', self
                         )
-                    elif piece[1] == 'P':
+                    elif p[1] == 'P':
                         square.occupying_piece = Paraszt(
-                            (x, y), 'white' if piece[0] == 'w' else 'black', self
+                            (x, y), 'white' if p[0] == 'w' else 'black', self
                         )
 
 
@@ -131,14 +126,14 @@ class Tábla:
                 self.selected_piece = clicked_square.occupying_piece
 
     def matt(self, color):
-        output = False
         for p in [i.occupying_piece for i in self.squares]:
             if p != None:
                 if p.notation == 'K' and p.color == color:
                     kir = p
         if kir.lehet(self) == []:
             if self.sak(color):
-                output = True
+                return True
+
 
 
     def sak(self, color, board_change=None):
@@ -177,10 +172,9 @@ class Tábla:
         if board_change is not None:
             old_square.occupying_piece = changing_piece
             new_square.occupying_piece = new_square_old_piece
-        return output
 
+            return output
 
-        return output
     def r(self, display):
         if self.selected_piece is not None:
             self.get_square_from_pos(self.selected_piece.pos).highlight = True
