@@ -1,8 +1,9 @@
 import pygame
 
+from bábu import Ló
 from bábu import Bástya
 from bábu import Futó
-from bábu import Ló
+
 from bábu import Vezér
 from bábu import Kir
 from bábu import Paraszt
@@ -87,12 +88,12 @@ class Tábla:
             for x, piece in enumerate(row):
                 if piece != '':
                     square = self.get_square_from_pos((x, y))
-                    # looking inside contents, what piece does it have
+
                     if piece[1] == 'R':
                         square.occupying_piece = Bástya(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
                         )
-                    # as you notice above, we put `self` as argument, or means our class Board
+
                     elif piece[1] == 'N':
                         square.occupying_piece = Ló(
                             (x, y), 'white' if piece[0] == 'w' else 'black', self
@@ -140,11 +141,11 @@ class Tábla:
                 output = True
 
 
-    def sak(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
+    def sak(self, color, board_change=None):
         output = False
         king_pos = None
         changing_piece = None
-        old_square = None
+
         new_square = None
         new_square_old_piece = None
         if board_change is not None:
