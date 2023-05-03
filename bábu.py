@@ -21,7 +21,7 @@ class Bábu:
                 else:
                     output.append(square)
         return output
-    def get_valid_moves(self, tábla):
+    def lehet(self, tábla):
         output = []
         for square in self.get_moves(tábla):
             if not tábla.sak(self.color, board_change=[self.pos, square.pos]):
@@ -30,7 +30,7 @@ class Bábu:
     def move(self, tábla, square, force=False):
         for i in tábla.squares:
             i.highlight = False
-        if square in self.get_valid_moves(tábla) or force:
+        if square in self.lehet(tábla) or force:
             prev_square = tábla.get_square_from_pos(self.pos)
             self.pos, self.x, self.y = square.pos, square.x, square.y
             prev_square.occupying_piece = None
@@ -363,10 +363,7 @@ class Kir(Bábu ):
         for i in moves:
             new_pos = (self.x + i[0], self.y + i[1])
             if (
-                new_pos[0] < 8 and
-                new_pos[0] >= 0 and
-                new_pos[1] < 8 and
-                new_pos[1] >= 0
+                new_pos[0] < 8 and new_pos[0] >= 0 and new_pos[1] < 8 and new_pos[1] >= 0
             ):
                 output.append([
                     tábla.get_square_from_pos(
@@ -408,10 +405,10 @@ class Kir(Bábu ):
                         ] == [None, None]:
                             return 'kingside'
 
-    def get_valid_moves(self, tábla):
+    def lehet(self, tábla):
         output = []
         for square in self.get_moves(tábla):
-            if not tábla.is_in_check(self.color, board_change=[self.pos, square.pos]):
+            if not tábla.sak(self.color, board_change=[self.pos, square.pos]):
                 output.append(square)
         if self.can_castle(tábla) == 'queenside':
             output.append(

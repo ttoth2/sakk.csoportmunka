@@ -129,6 +129,16 @@ class Tábla:
             if clicked_square.occupying_piece.color == self.turn:
                 self.selected_piece = clicked_square.occupying_piece
 
+    def matt(self, color):
+        output = False
+        for p in [i.occupying_piece for i in self.squares]:
+            if p != None:
+                if p.notation == 'K' and p.color == color:
+                    kir = p
+        if kir.lehet(self) == []:
+            if self.sak(color):
+                output = True
+
 
     def sak(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
         output = False
@@ -168,22 +178,12 @@ class Tábla:
             new_square.occupying_piece = new_square_old_piece
         return output
 
-    # checkmate state checker
-    def matt(self, color):
-        output = False
-        for p in [i.occupying_piece for i in self.squares]:
-            if p != None:
-                if p.notation == 'K' and p.color == color:
-                    kir = p
-        if kir.get_valid_moves(self) == []:
-            if self.sak(color):
-                output = True
 
         return output
     def r(self, display):
         if self.selected_piece is not None:
             self.get_square_from_pos(self.selected_piece.pos).highlight = True
-            for square in self.selected_piece.get_valid_moves(self):
+            for square in self.selected_piece.lehet(self):
                 square.highlight = True
         for square in self.squares:
             square.draw(display)

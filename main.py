@@ -20,7 +20,7 @@ if __name__ == '__main__':
 	while running:
 		mx, my = pygame.mouse.get_pos()
 		for event in pygame.event.get():
-			# Quit the game if the user presses the close button
+		
 			if event.type == pygame.QUIT:
 				running = False
 			elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -32,5 +32,5 @@ if __name__ == '__main__':
 		elif T.matt('white'):
 			print('Black wins!')
 			running = False
-		# Draw the board
+
 		draw(screen)
