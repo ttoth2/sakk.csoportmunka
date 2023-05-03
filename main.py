@@ -6,7 +6,9 @@ pygame.init()
 
 WINDOW_SIZE = (600, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE)
-
+bg = pygame.image.load("sakk/w_king.png")
+pygame.display.set_caption('Sakk')
+pygame.display.set_icon(bg)
 T = Tábla(WINDOW_SIZE[0], WINDOW_SIZE[1])
 
 def draw(display):

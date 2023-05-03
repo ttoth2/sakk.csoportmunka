@@ -128,7 +128,7 @@ class Tábla:
     def matt(self, color):
         for p in [i.occupying_piece for i in self.squares]:
             if p != None:
-                if p.notation == 'K' and p.color == color:
+                if p.jel == 'K' and p.color == color:
                     kir = p
         if kir.lehet(self) == []:
             if self.sak(color):
@@ -158,11 +158,11 @@ class Tábla:
             i.occupying_piece for i in self.squares if i.occupying_piece is not None
         ]
         if changing_piece is not None:
-            if changing_piece.notation == 'K':
+            if changing_piece.jel == 'K':
                 king_pos = new_square.pos
         if king_pos == None:
             for piece in pieces:
-                if piece.notation == 'K' and piece.color == color:
+                if piece.jel == 'K' and piece.color == color:
                         king_pos = piece.pos
         for piece in pieces:
             if piece.color != color:
